@@ -8,11 +8,8 @@ import re
 
 
 
-def set_rules(world: World, extra_walls_table: Dict[str, str], override = False):
+def set_rules(world: World, extra_walls_table: Dict[str, str]):
 
-    if(override == False and hasattr(world.multiworld, "generation_is_fake")):
-        return
-    
     player = world.player
     multiworld = world.multiworld
 
@@ -47,7 +44,11 @@ def set_rules(world: World, extra_walls_table: Dict[str, str], override = False)
     connect_regions(world, "Lava Caves", "Crows_intro", lambda state: wall_rule(state, world, extra_walls_table, "Lava_Ice"), twoway=True)
 
     connect_regions(world, "Ice Caves", "Flowers", lambda state: wall_rule(state, world, extra_walls_table, "Flowers_Ice"), twoway=True)
-    connect_regions(world, "Ice Caves", "Crows_intro", lambda state: wall_rule(state, world, extra_walls_table, "Lava_Ice"), twoway=True)
+
+    connect_regions(world, "Ice Caves", "Ice Caves_inner", lambda state: state.has("White Switch", player, 1), twoway=False)
+    connect_regions(world, "Ice Caves_inner", "Ice Caves", None, twoway=False)
+
+    connect_regions(world, "Ice Caves_inner", "Crows_intro", lambda state: wall_rule(state, world, extra_walls_table, "Lava_Ice"), twoway=True)
 
     connect_regions(world, "Crows_intro", "Crows", lambda state: (((state.has("Left Yellow Switch", player, 1) and \
         state.has("Right Yellow Switch", player, 1)) or \

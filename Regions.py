@@ -22,7 +22,7 @@ def create_regions(world: World):
 	if(world.options.hidden_costume_rando):
 		location_table.update(hidden_costume_location_table)
 	
-	scpareas = ["Village", "Canyon", "Jungle", "Factory", "Mushrooms_outside", "Mushrooms", "Lava Caves", "Ice Caves", "Flowers", "Crows_intro", "Crows", "Warp Room", "Void", "Final"]
+	scpareas = ["Village", "Canyon", "Jungle", "Factory", "Mushrooms_outside", "Mushrooms", "Lava Caves", "Ice Caves", "Ice Caves_inner", "Flowers", "Crows_intro", "Crows", "Warp Room", "Void", "Final"]
 	
 	regMenu = Region("Menu", player, multiworld)
 	multiworld.regions.append(regMenu)
@@ -84,8 +84,17 @@ def create_regions(world: World):
 	regIce = Region("Ice Caves", player, multiworld)
 	iceLocNames = list(filter(lambda x: "Ice Caves - " in x, location_table))
 	iceLocNames.append('White Switch')
+	if "Cat [Ice Caves - By Crows]" in iceLocNames:
+		iceLocNames.remove("Cat [Ice Caves - By Crows]")
 	regIce.locations += [SCPLocation(player, loc_name, location_table[loc_name].address, regIce) for loc_name in iceLocNames]
 	multiworld.regions.append(regIce)
+
+	regIceInner = Region("Ice Caves_inner", player, multiworld)
+	iceInnerLocNames = []
+	if(world.options.cat_rando):
+		iceInnerLocNames.append("Cat [Ice Caves - By Crows]")
+	regIceInner.locations += [SCPLocation(player, loc_name, location_table[loc_name].address, regIceInner) for loc_name in iceInnerLocNames]
+	multiworld.regions.append(regIceInner)
 
 	regFlowers = Region("Flowers", player, multiworld)
 	flowersLocNames = list(filter(lambda x: "Flowers - " in x, location_table))

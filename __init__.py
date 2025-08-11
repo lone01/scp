@@ -47,7 +47,26 @@ class SuperCatPlanetWorld(World):
     item_name_to_id = {name: data.address for name, data in item_table.items()}
     location_name_to_id = {name: data.address for name, data in full_location_table.items()}
 
+    ut_can_gen_without_yaml = True
+
     def generate_early(self):
+
+        # Yaml-less UT support by using re_gen_passthrough and passing the options and walls table from slot data.
+        if hasattr(self.multiworld, "generation_is_fake"):
+            if hasattr(self.multiworld, "re_gen_passthrough"):
+                if self.game in self.multiworld.re_gen_passthrough:
+                    slot_data: Dict[str, Any] = self.multiworld.re_gen_passthrough[self.game]
+                    self.options.cat_rando.value = slot_data["cat_rando"]
+                    self.options.local_cats.value = slot_data["local_cats"]
+                    self.options.strange_cat_rando.value = slot_data["strange_cat_rando"]
+                    self.options.extra_walls.value = slot_data["extra_walls"]
+                    self.options.hidden_costume_rando.value = slot_data["hidden_costume_rando"]
+                    self.options.ending_required = slot_data["ending_required"]
+                    self.options.include_final_stage.value = slot_data["include_final_stage"]
+                    self.options.cat_hunt_enabled.value = slot_data["cat_hunt_enabled"]
+                    self.options.cat_hunt_target.value = slot_data["cat_hunt_target"]
+                    self.extra_walls_table = slot_data["extra_walls_table"]
+            return
 
         if(self.options.ending_required.value == 1):
             self.options.include_final_stage.value = 1
@@ -137,6 +156,6 @@ class SuperCatPlanetWorld(World):
     def create_regions(self):
         create_regions(self)
 
-    def interpret_slot_data(self, slot_data: Dict[str, Any]) -> None:
-        self.extra_walls_table = slot_data["extra_walls_table"]
-        set_rules(self, self.extra_walls_table, override = True)
+    @staticmethod
+    def interpret_slot_data(slot_data: Dict[str, Any]) -> Dict[str, Any]:
+        return slot_data
